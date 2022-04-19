@@ -1,40 +1,46 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Statistics } from 'components/Statistics/Statistics';
 import { FeedbackOptions } from 'components/FeedbackOptions/FeedbackOptions';
 import { Section } from './Section/Section';
 import { Notification } from './Notification/Notification';
-export class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0
-  }
-
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
+export const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+  
+  const countTotalFeedback = () => {
    return  good + neutral + bad
   }
 
-  countPositiveFeedbackPercentage = () => {
-    return Math.round(this.state.good*100/this.countTotalFeedback())
+  const countPositiveFeedbackPercentage = () => {
+    return Math.round(good*100/countTotalFeedback())
   }
 
-  onLeaveFeedback = (value) => {
-    this.setState( prevState  =>({
-      [value]: prevState[value] + 1
-    }))
+  const onLeaveFeedback = value => {
+   switch (value) {
+      case "good":
+        setGood(state => state + 1);
+        break;
+      case "neutral":
+        setNeutral(state => state + 1);
+        break;
+      case "bad":
+        setBad(state => state + 1);
+       break;
+     
+     default:
+       return;
+    }
   }
 
-  render() {
-    const options = Object.keys(this.state);
-    const keys = this.state;
-    const total = this.countTotalFeedback();
-    const positivePercentage = this.countPositiveFeedbackPercentage();
+    const keys = { good, neutral, bad };
+    const total = countTotalFeedback();
+    const positivePercentage = countPositiveFeedbackPercentage();
 
     return (
       <>
         <Section title='Please leave feedback'>
-          <FeedbackOptions options={options} onLeaveFeedback={this.onLeaveFeedback} />
+          <FeedbackOptions options={['good', 'neutral', 'bad']} onLeaveFeedback={onLeaveFeedback} />
         </Section>
 
         <Section title='Statistics'>
@@ -43,6 +49,5 @@ export class App extends Component {
         </Section>
       </>
     );
-  }
 };
    
